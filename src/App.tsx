@@ -1,11 +1,25 @@
-import React, { FC, FormEvent, useState } from "react";
+import { ChangeEvent, FC, FormEvent, useState } from "react";
 
 const App: FC = () => {
-	const [inputText, setInputText] = useState("");
+	const [formState, setFormState] = useState({
+		input: "",
+		maxTokens: 100,
+		temperature: 0,
+	});
 	const [inputToken, setInputToken] = useState("");
+
 	const [fetchResult, setFetchResult] = useState<string | null>(null);
 	const [fetchLoading, setFetchLoading] = useState(false);
 	const [fetchError, setFetchError] = useState<string | null>(null);
+
+	const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = event.target;
+
+		setFormState((prev) => ({
+			...prev,
+			[name]: value,
+		}));
+	};
 
 	const formHandler = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -13,7 +27,11 @@ const App: FC = () => {
 		setFetchLoading(true);
 		setFetchResult(null);
 
-		const body = JSON.stringify({ input: inputText });
+		const body = JSON.stringify({
+			input: formState.input,
+			maxTokens: +formState.maxTokens,
+			temperature: +formState.temperature,
+		});
 
 		try {
 			const respnose = fetch("https://djadwnui9f.execute-api.eu-west-1.amazonaws.com/dlohunov/chat", {
@@ -53,18 +71,47 @@ const App: FC = () => {
 							<input
 								id="text"
 								type="text"
-								name="iput"
-								value={inputText}
+								name="input"
+								value={formState.input}
 								required
-								onChange={(event) => setInputText(event.target.value)}
+								onChange={inputHandler}
 								className="form__input"
 								placeholder="Text"
 							/>
 						</label>
-						<label htmlFor="text" className="form__label">
+						<label htmlFor="maxLength" className="form__label">
+							Max length
+							<input
+								id="maxLength"
+								type="number"
+								name="maxTokens"
+								min={1}
+								required
+								value={formState.maxTokens}
+								inputMode="numeric"
+								onChange={inputHandler}
+								className="form__input"
+								placeholder="Max length"
+							/>
+						</label>
+						<label htmlFor="temperature " className="form__label">
+							Temperature - {formState.temperature}
+							<input
+								id="temperature"
+								type="range"
+								name="temperature"
+								min="0"
+								max="1"
+								step="0.1"
+								value={formState.temperature}
+								onChange={inputHandler}
+								className="form__input"
+							/>
+						</label>
+						<label htmlFor="password" className="form__label">
 							Password
 							<input
-								id="text"
+								id="password"
 								type="password"
 								name="token"
 								value={inputToken}
