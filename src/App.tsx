@@ -3,7 +3,7 @@ import { ChangeEvent, FC, FormEvent, useState } from "react";
 const App: FC = () => {
 	const [formState, setFormState] = useState({
 		input: "",
-		maxTokens: 100,
+		maxTokens: 3500,
 		temperature: 0,
 	});
 	const [inputToken, setInputToken] = useState("");
